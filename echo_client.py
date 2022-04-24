@@ -15,7 +15,7 @@ BUFFER_SIZE = 4096  # 4KB
 server_address = ('localhost', 5001)
 print('Conexion a: {} puerto: {}'.format(*server_address))
 sock.connect(server_address)
-
+#Se indica el archivo que se va enviar por medio del socket
 filename="SecretText"
 filesize=os.path.getsize(filename)
 # Envia el archivo mediante el socket

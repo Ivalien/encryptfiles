@@ -14,7 +14,7 @@ def randombytes_deterministic(
         size: int, seed: bytes, encoder: encoding.Encoder = encoding.RawEncoder) -> bytes:
     raw_data = nacl.bindings.randombytes_buf_deterministic(size, seed)
     return encoder.encode(raw_data)
-#Tamaño de llave de 32 bytes para AES-256
+#Tamaño de llave de 32 bytes para cifrar AES-256
 key = randombytes_deterministic(32, bytes(random(32)))
 # Se crea un socket TCP/IP
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -49,22 +49,25 @@ with open(filename, "wb") as f:
         # Actualiza la barra de profreso
         progress.update(len(bytes_read))
 
-
 #Se cierra la conexion cuando termina de recibir informacion
 connection.close()
+#Despues de haber recibido el archivo se encrypta por medio de dos funciones
+#La funcion pad comienza a encryptar por medio de bloques
 def pad(s):
     return s + b"\0" * (AES.block_size - len(s) % AES.block_size)
-
+#La generacion de los caracteres para cefifrarlo
+#Se realiza mediante un vector Inicial
 def encrypt(message, key):
     message = pad(message)
     iv = Random.new().read(AES.block_size)
     cipher = AES.new(key, AES.MODE_CBC, iv)
     return iv + cipher.encrypt(message)
-
+#Lee el archivo a encryptar y comienza a escribirlo con el cipher en un archivo nuevo
 def encrypt_file(file_name, key):
     with open(file_name, 'rb') as fo:
         plaintext = fo.read()
     enc = encrypt(plaintext, key)
     with open(file_name + ".enc", 'wb') as fo:
         fo.write(enc)
+#Llamado a la funcion para encryptar el archivo, inidicnado el nombre y llave a utilizar
 encrypt_file(filename,key)
